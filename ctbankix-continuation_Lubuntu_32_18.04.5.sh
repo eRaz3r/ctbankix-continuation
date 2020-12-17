@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #	ctbankix-continuation
-#	Copyright (C) 2020 ctbankix-continuation-team
+#	Copyright (C) 2018 ctbankix-continuation-team
 #
 #	This program is free software: you can redistribute it and/or modify
 #	it under the terms of the GNU Affero General Public License as
@@ -17,10 +17,10 @@
 #	along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 echo
-echo "Bauanleitung - Lubuntu 20.04.1 64 Bit"
-echo "====================================="
+echo "Bauanleitung"
+echo "============"
 echo
-echo "1. Das vorliegende Skript bitte in (L)Ubuntu 20.04.1 64 Bit per sudo auf der Kommandozeile/im Terminal ausfuehren."
+echo "1. Das vorliegende Skript bitte in (L)Ubuntu 18.04 32 Bit per sudo auf der Kommandozeile/im Terminal ausfuehren."
 echo "2. Nach Durchlauf des Skriptes steht ein ISO-Image (live.iso) bereit, dass auf einen USB-Stick gebracht werden muss."
 echo "  a) Den USB-Stick (min. 2 GB, besser 4 GB) entsprechend (eine Partition, FAT32) formatieren (bspw. mithilfe der Anwendung 'Laufwerke')."
 echo "  b) Das Bootflag des Sticks setzen (bspw. mithilfe der Anwendung 'GParted')."
@@ -33,9 +33,9 @@ then
 	exit
 fi
 
-if ! head -1 /etc/issue | grep -q 'Ubuntu 20.04.1' || ! [ $(getconf LONG_BIT) == '64' ]
+if ! head -1 /etc/issue | grep -q 'Ubuntu 18.04.5' || ! [ $(getconf LONG_BIT) == '32' ]
 then
-	echo "Sie benutzen die falsche (L)Ubuntu-Version. Bitte (L)Ubuntu 20.04.1 64 Bit verwenden."
+	echo "Sie benutzen die falsche (L)Ubuntu-Version. Bitte (L)Ubuntu 18.04.5 32 Bit verwenden."
 	exit
 fi
 
@@ -63,9 +63,9 @@ cd $(ls -d */ | grep linux-)
 sed -i '/^static inline unsigned int ata_dev_enabled(const struct ata_device \*dev)/{N;N;N;s/return ata_class_enabled(dev->class);/return dev->class == ATA_DEV_ATAPI;/}' include/linux/libata.h
 
 sed -i '/^CONFIG_BLK_DEV_NVME/d' debian.master/config/config.common.ubuntu
-sed -i '/^(# )?CONFIG_NVME_/d' debian.master/config/config.common.ubuntu
+sed -i '/^CONFIG_NVME_/d' debian.master/config/config.common.ubuntu
 
-cat >> debian.master/config/config.common.ubuntu << EOF
+cat >> debian.master/config/i386/config.common.i386 << EOF
 # CONFIG_BLK_DEV_NVME is not set
 # CONFIG_NVME_FC is not set
 # CONFIG_NVME_RDMA is not set
@@ -73,10 +73,6 @@ cat >> debian.master/config/config.common.ubuntu << EOF
 EOF
 
 sed -i "/^CONFIG_BLK_DEV_NVME/ s/'m'/'n'/g" debian.master/config/annotations
-sed -i "/^CONFIG_NVME_/ s/'[mny]'/'-'/g" debian.master/config/annotations
-sed -i "/^CONFIG_NVME_FC / s/'-'/'n'/g" debian.master/config/annotations
-sed -i "/^CONFIG_NVME_RDMA / s/'-'/'n'/g" debian.master/config/annotations
-sed -i "/^CONFIG_NVME_TARGET / s/'-'/'n'/g" debian.master/config/annotations
 
 # Kernel bauen
 
@@ -109,14 +105,17 @@ export PS4='$(CHECK)\n\n$(tput bold)$(tput setaf 7)$(tput setab 4)+ (${BASH_SOUR
 #### System bauen #### BEGIN ####
 
 apt-get -y install build-essential debootstrap squashfs-tools genisoimage syslinux-common syslinux-utils
-wget -c -N -P source https://cdimage.ubuntu.com/lubuntu/releases/20.04.1/release/lubuntu-20.04.1-desktop-amd64.iso
+wget -c -N -P source https://cdimage.ubuntu.com/lubuntu/releases/18.04.5/release/lubuntu-18.04.5-desktop-i386.iso
+wget -c -N -P source https://cdimage.ubuntu.com/lubuntu/releases/18.04/release/lubuntu-18.04.5-desktop-amd64.iso
 
-mount -o loop source/lubuntu-20.04.1-desktop-amd64.iso /mnt/
+mount -o loop source/lubuntu-18.04.5-desktop-amd64.iso /mnt/
 mkdir iso
 cp -r /mnt/.disk/ /mnt/boot/ /mnt/EFI/ iso/
 mkdir iso/casper
+umount /mnt
 
 # Bereits gebautes Live-System des verwendeteten ISOs entpacken
+mount -o loop source/lubuntu-18.04.5-desktop-i386.iso /mnt/
 unsquashfs -d squashfs /mnt/casper/filesystem.squashfs
 
 # Ressourcen des Build-Systems in Live-System hineinmappen
@@ -136,17 +135,17 @@ chroot squashfs/ locale-gen de_DE.UTF-8
 chroot squashfs/ locale-gen de_CH.UTF-8
 
 # System schlank machen
-chroot squashfs/ apt-get -y purge libreoffice-* trojita* skanlite blue* quassel* transmission-* 2048-qt k3b* vlc* vim* noblenote xscreensaver* snapd fonts-noto-cjk git* oxygen-icon-theme calamares* language-pack* lvm2 apport btrfs* cryptsetup genisoimage xul-ext-ubufox
-
-chroot squashfs/ apt-get -y purge linux-image-* linux-headers-* linux-modules-* 
+chroot squashfs/ apt-get -y purge pidgin* abiword* transmission* gnumeric* xfburn* mtpaint simple-scan* sylpheed* audacious* guvcview fonts-noto-cjk ubiquity* mplayer language-pack* lvm2 gparted apport whoopsie blue* btrfs* cryptsetup evolution* gdebi* genisoimage xul-ext-ubufox firefox-locale-*
+chroot squashfs/ apt-get -y purge linux-image-* linux-headers-* linux-modules-*
 chroot squashfs/ apt-get -y autoremove --purge
 
 # alle Updates einspielen
 chroot squashfs/ apt-get update
+#chroot squashfs/ apt-get -y dist-upgrade
 chroot squashfs/ apt-get -y upgrade
 
 # Zusaetzliche Pakete einspielen
-chroot squashfs/ apt-get -y install tzdata language-pack-de firefox-locale-de squashfs-tools cups wswiss wngerman wogerman aspell-de hunspell-de-de
+chroot squashfs/ apt-get -y install tzdata language-pack-de firefox-locale-de squashfs-tools cups network-manager-openconnect-gnome wswiss wngerman language-pack-gnome-de wogerman aspell-de hunspell-de-de
 
 # Zeitzone setzen
 echo "Europe/Berlin" | tee squashfs/etc/timezone
@@ -160,13 +159,11 @@ chroot squashfs/ ls | chroot squashfs/ grep .deb | chroot squashfs/ tr '\n' ' ' 
 chroot squashfs/ apt-get -f -y install
 rm squashfs/*.deb
 
-# Microcodes + Tools nachinstallieren, die durch das Entfernen der linux*-Pakete verloren gegangen sind
-chroot squashfs/ apt-get -y install amd64-microcode intel-microcode iucode-tool thermald
-
 # APT + Software-Center aufrauemen
 chroot squashfs/ apt-get -y check
 chroot squashfs/ apt-get -y autoremove --purge
 chroot squashfs/ apt-get -y clean
+rm squashfs/var/cache/lsc_packages.db
 
 # Firefox-Profil im Ordner source/skel erzeugen
 mkdir -p source/skel/.mozilla/firefox/ctbankix.default
@@ -297,12 +294,12 @@ cp /mnt/isolinux/boot.cat /mnt/isolinux/isolinux.bin /mnt/isolinux/*.c32 iso/iso
 # - "layoutcode=de" ersetzen durch "layoutcode=ch"
 cat > iso/isolinux/isolinux.cfg << EOF
 default vesamenu.c32
-menu title c't Bankix Lubuntu 20.04.1
+menu title c't Bankix Lubuntu 18.04.5
 
 label ctbankix
-  menu label c't Bankix Lubuntu 20.04.1
+  menu label c't Bankix Lubuntu 18.04.5
   kernel /casper/vmlinuz
-  append BOOT_IMAGE=/casper/vmlinuz boot=casper initrd=/casper/initrd.lz showmounts quiet splash noprompt -- debian-installer/locale=de_DE console-setup/layoutcode=de
+  append BOOT_IMAGE=/casper/vmlinuz boot=casper initrd=/casper/initrd.lz showmounts quiet splash -- debian-installer/locale=de_DE console-setup/layoutcode=de
   
 label local
   menu label Betriebssystem von Festplatte starten
@@ -323,13 +320,21 @@ fi
 set menu_color_normal=white/black
 set menu_color_highlight=black/light-gray
 
-menuentry "c't Bankix Lubuntu 20.04.1" {
+menuentry "c't Bankix Lubuntu 18.04.5" {
 	set gfxpayload=keep
-	linux	/casper/vmlinuz boot=casper showmounts quiet splash noprompt -- debian-installer/locale=de_DE console-setup/layoutcode=de
+	linux	/casper/vmlinuz  file=/cdrom/preseed/lubuntu.seed boot=casper showmounts quiet splash -- debian-installer/locale=de_DE console-setup/layoutcode=de
 	initrd	/casper/initrd.lz
 }
 EOF
 
+# ToDo: Weglassen?
+cat > iso/boot/grub/loopback.cfg << EOF
+menuentry "c't Bankix Lubuntu 18.04.5" {
+	set gfxpayload=keep
+	linux	/casper/vmlinuz  file=/cdrom/preseed/lubuntu.seed boot=casper iso-scan/filename=${iso_path} showmounts quiet splash -- debian-installer/locale=de_DE console-setup/layoutcode=de
+	initrd	/casper/initrd.lz
+}
+EOF
 
 # apt-Pinning um das Einspielen ungepatchter Kernel zu verhindern
 cat > squashfs/etc/apt/preferences << EOF
@@ -370,8 +375,7 @@ tmp/*
 var/log/*
 EOF
 
-
-# Skript zur Erzeugung des Snapshots bereitstellen
+#TODO: Initramdisk bauen und an entsprechende Stelle kopieren, sobald gepatchte Kernel bereitstehen
 
 cat > squashfs/usr/sbin/BankixCreateSnapshot.sh << EOF
 #!/bin/bash
@@ -388,7 +392,7 @@ then
 	sudo apt-get -y clean
 	sudo blockdev --setrw \$(findmnt -n -o SOURCE --mountpoint /cdrom)
 	sudo mount -o remount,rw /cdrom
-	sudo mksquashfs / /cdrom/casper/filesystem_new.squashfs -ef /excludes -wildcards -comp lz4 -Xhc
+	sudo mksquashfs / /cdrom/casper/filesystem_new.squashfs -ef /excludes -wildcards
 	sudo rm -f /cdrom/filesystem_old.squashfs
 	sudo mv /cdrom/casper/filesystem.squashfs /cdrom/filesystem_old.squashfs
 	sudo mv /cdrom/casper/filesystem_new.squashfs /cdrom/casper/filesystem.squashfs
@@ -418,10 +422,9 @@ Icon=/usr/share/icons/Humanity/actions/48/document-save.svg
 EOF
 chmod +x squashfs/etc/skel/Desktop/BankixCreateSnapshot.desktop
 
-cp /usr/share/applications/lxqt-config-monitor.desktop squashfs/etc/skel/Desktop/
+cp /usr/share/applications/lxrandr.desktop squashfs/etc/skel/Desktop/
 cp /usr/share/applications/firefox.desktop squashfs/etc/skel/Desktop/
-cp /usr/share/applications/upg-apply.desktop squashfs/etc/skel/Desktop/
-
+cp /usr/share/applications/update-manager.desktop squashfs/etc/skel/Desktop/
 
 # Echtzeituhr: Lokalzeit anstatt UTC verwenden für Dual-Boot mit Windows
 echo "0.0 0 0" > squashfs/etc/adjtime
@@ -432,8 +435,9 @@ echo "LOCAL" >> squashfs/etc/adjtime
 
 
 #### Iso erzeugen #### BEGIN ####
-cp squashfs/boot/initrd.img-* iso/casper/initrd.lz
-cp squashfs/boot/vmlinuz-* iso/casper/vmlinuz
+
+zcat squashfs/boot/initrd.img* | lzma -9c > iso/casper/initrd.lz
+cp squashfs/boot/vmlinuz* iso/casper/vmlinuz
 
 umount squashfs/dev/pts squashfs/dev squashfs/proc squashfs/sys /mnt
 
@@ -441,7 +445,7 @@ umount squashfs/dev/pts squashfs/dev squashfs/proc squashfs/sys /mnt
 chroot squashfs/ mv /etc/resolv.conf.original /etc/resolv.conf
 chroot squashfs/ mv /etc/apt/sources.list.original /etc/apt/sources.list
 
-mksquashfs squashfs iso/casper/filesystem.squashfs -noappend -comp lz4 -Xhc
+mksquashfs squashfs iso/casper/filesystem.squashfs -noappend
 genisoimage -cache-inodes -r -J -l -b isolinux/isolinux.bin -c isolinux/boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o live.iso -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot iso
 
 isohybrid -u live.iso
@@ -449,4 +453,3 @@ isohybrid -u live.iso
 #### Iso erzeugen #### END ######
 date
 echo
-
