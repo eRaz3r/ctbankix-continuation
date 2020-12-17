@@ -20,7 +20,7 @@ echo
 echo "Bauanleitung"
 echo "============"
 echo
-echo "1. Das vorliegende Skript bitte in (L)Ubuntu 18.04 32 Bit per sudo auf der Kommandozeile/im Terminal ausfuehren."
+echo "1. Das vorliegende Skript bitte in (L)Ubuntu 18.04.5 32 Bit per sudo auf der Kommandozeile/im Terminal ausfuehren."
 echo "2. Nach Durchlauf des Skriptes steht ein ISO-Image (live.iso) bereit, dass auf einen USB-Stick gebracht werden muss."
 echo "  a) Den USB-Stick (min. 2 GB, besser 4 GB) entsprechend (eine Partition, FAT32) formatieren (bspw. mithilfe der Anwendung 'Laufwerke')."
 echo "  b) Das Bootflag des Sticks setzen (bspw. mithilfe der Anwendung 'GParted')."
