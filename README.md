@@ -14,20 +14,20 @@ Seit Anfang August 2020 steht ein Skript für die 64-Bit-Version von Lubuntu 20.
 ## Bauanleitung
 
 ### Virtualisierungsumgebung installieren
-1. VirtualBox und Extension Pack installieren
-VirtualBox (aktuellste Version):
-https://download.virtualbox.org/virtualbox/6.1.16/VirtualBox-6.1.16-140961-Win.exe
-Extension Pack (aktuellste Version):
-https://download.virtualbox.org/virtualbox/6.1.16/Oracle_VM_VirtualBox_Extension_Pack-6.1.16.vbox-extpack
+VirtualBox und Extension Pack installieren
+
+[VirtualBox (aktuellste Version)](https://download.virtualbox.org/virtualbox/6.1.16/VirtualBox-6.1.16-140961-Win.exe)
+
+[Extension Pack (aktuellste Version)](https://download.virtualbox.org/virtualbox/6.1.16/Oracle_VM_VirtualBox_Extension_Pack-6.1.16.vbox-extpack)
 
 
 ### Build-System bereitstellen - 64-Bit
 1. Virtuelle Maschine aufsetzen (64-Bit Linux, 50GB Festplattenplatz (empfohlen 70GB), min. 2GB RAM (empfohlen 4GB), aktive Netzwerkverbindung) und darin [Lubuntu 64 Bit 20.04.1](https://cdimage.ubuntu.com/lubuntu/releases/20.04.1/release/lubuntu-20.04.1-desktop-amd64.iso "ISO-Image Lubuntu 20.04.1") installieren.
-3. Gasterweiterungen installieren
+2. Gasterweiterungen installieren
 
 ### Build-System bereitstellen - 32-Bit (nicht empfohlen, es wird kein Support mehr bereitsgestellt)
-2. Virtuelle Maschine aufsetzen (32-Bit Linux, 50GB Festplattenplatz, min. 2GB RAM, aktive Netzwerkverbindung) und darin [Lubuntu 32 Bit 18.04.5](https://cdimage.ubuntu.com/lubuntu/releases/18.04.5/release/lubuntu-18.04.5-desktop-i386.iso "ISO-Image Lubuntu 18.04.5") installieren.
-3. Gasterweiterungen installieren
+1. Virtuelle Maschine aufsetzen (32-Bit Linux, 50GB Festplattenplatz, min. 2GB RAM, aktive Netzwerkverbindung) und darin [Lubuntu 32 Bit 18.04.5](https://cdimage.ubuntu.com/lubuntu/releases/18.04.5/release/lubuntu-18.04.5-desktop-i386.iso "ISO-Image Lubuntu 18.04.5") installieren.
+2. Gasterweiterungen installieren
 
 ### Live-System innerhalb des Build-Systems bauen
 
