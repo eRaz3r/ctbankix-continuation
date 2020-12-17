@@ -1,8 +1,7 @@
 # ctbankix-continuation
 
-## Dieser Fork wurde um Details zur 64-Bit-Version sowie tiefergehenden Informationen zur Bereitstellung der virtuellen Buildumgebung ergänzt. 
-## Im Script wurde weiterhin ein schnellerer Downloadmirror (Link direkt von der Lubuntu-Projektseite) eingefügt.
-## Das Buildscript der nicht mehr empfohlenen 32-Bit-Version wurde an die aktuellste 18.04.5 angepasst.
+## Anpassung
+Dieser Fork wurde um Details zur 64-Bit-Version sowie tiefergehenden Informationen zur Bereitstellung der virtuellen Buildumgebung ergänzt. Im Script wurde weiterhin ein schnellerer Downloadmirror (Link direkt von der Lubuntu-Projektseite) eingefügt. Das Buildscript der nicht mehr empfohlenen 32-Bit-Version wurde an die aktuellste 18.04.5 angepasst.
 
 ## Motivation: Weiterführung des ehemaligen Projekts _ctbankix_.
 
